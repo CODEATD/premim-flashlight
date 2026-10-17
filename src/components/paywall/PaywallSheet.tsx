@@ -1,13 +1,16 @@
-import { Modal, Pressable, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Animated, Easing, Modal, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Lock } from "lucide-react-native";
-import Animated, { FadeInDown, SlideInDown } from "react-native-reanimated";
+import Reanimated, { FadeIn } from "react-native-reanimated";
 
 import { Colors } from "@/constants/theme";
 import { PLANS } from "@/constants/content";
 import { usePaywall } from "@/hooks/usePaywall";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import PlanOption from "./PlanOption";
+
+const SHEET_START_OFFSET = 800;
 
 interface Props {
   onJoke: () => void;
@@ -29,16 +32,29 @@ const PaywallSheet = ({ onJoke }: Props) => {
 
   const progressWidth = `${Math.round(progress * 100)}%` as const;
 
+  // El sheet sube desde abajo y siempre termina en translateY = 0.
+  const [slide] = useState(() => new Animated.Value(SHEET_START_OFFSET));
+
+  useEffect(() => {
+    Animated.timing(slide, {
+      toValue: 0,
+      duration: 300,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [slide]);
+
   return (
     <Modal
       visible
       transparent
       statusBarTranslucent
+      navigationBarTranslucent
       animationType="fade"
       onRequestClose={() => {}}
     >
       <View className="flex-1 justify-end bg-ink/[0.62]">
-        <Animated.View entering={SlideInDown.duration(300)}>
+        <Animated.View style={{ transform: [{ translateY: slide }] }}>
           <View
             className="rounded-t-[28px] bg-surface px-6 pt-3"
             style={{ paddingBottom: insets.bottom + 16 }}
@@ -106,13 +122,13 @@ const PaywallSheet = ({ onJoke }: Props) => {
               )}
 
               {jokeReady && (
-                <Animated.View entering={FadeInDown.duration(300)}>
+                <Reanimated.View entering={FadeIn.duration(300)}>
                   <PrimaryButton
                     label="Es broma · apágala gratis"
                     variant="outline"
                     onPress={onJoke}
                   />
-                </Animated.View>
+                </Reanimated.View>
               )}
             </View>
 

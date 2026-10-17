@@ -35,9 +35,6 @@ const RevealView = ({ onRestart }: Props) => {
       </View>
 
       <PrimaryButton label="Volver a empezar" onPress={onRestart} />
-      <Text className="mt-4 text-center font-mono text-xs text-faint">
-        más apps inútiles en @codeatd
-      </Text>
     </View>
   );
 };
