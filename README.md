@@ -1,56 +1,97 @@
-# Welcome to your Expo app 👋
+# Linterna Premium
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+App de broma de **CODE ATD**: enciende la linterna real del teléfono gratis, pero para apagarla muestra un paywall falso. Unos segundos después aparece el botón **"Es broma · apágala gratis"**, que apaga el flash y muestra la pantalla final **"ERA BROMA"**.
 
-## Get started
+> No cobra nada, no pide datos de pago y no hace llamadas de red. El paywall son solo planes y un botón.
 
-1. Install dependencies
+## Cómo funciona
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+off ──Encender──▶ on ──Apagar──▶ paywall ──Es broma──▶ reveal ──Volver a empezar──▶ off
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+| Estado | Flash | Qué se ve |
+|---|---|---|
+| `off` | apagado | Pantalla oscura, "Linterna apagada" |
+| `on` | **encendido** | Pantalla clara con círculo dorado |
+| `paywall` | **sigue encendido** | Sheet de pago falso con 3 planes |
+| `reveal` | apagado | "ERA BROMA" y un bloque de código |
 
-### Other setup steps
+**En el paywall:**
+- "Pagar" simula un pago de ~2.3 s y lo rechaza: *"esta linterna no acepta tarjetas, solo aplausos"*.
+- "Cancelar" cambia de texto en cada toque y nunca cierra el sheet.
+- El botón atrás de Android tampoco lo cierra.
+- A los 5 s (o al fallar el pago) aparece el botón de broma.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+**Linterna:**
+- Pide permiso de cámara la primera vez que tocas "Encender".
+- Si se niega el permiso o el teléfono no tiene flash, la app funciona igual y la luz es la pantalla clara (con un aviso discreto).
+- Si la app pasa a segundo plano, la linterna se apaga y vuelve a `off`.
 
-## Learn more
+## Stack
 
-To learn more about developing your project with Expo, look at the following resources:
+- [Expo](https://expo.dev) SDK 57 + React Native + TypeScript
+- [Expo Router](https://docs.expo.dev/router/introduction/) (una sola pantalla, sin navegación)
+- [NativeWind](https://www.nativewind.dev) 4 + Tailwind CSS 3, con la paleta de CODE ATD en `tailwind.config.js`
+- `expo-camera` (flash), `expo-haptics`, `expo-font`, `lucide-react-native`
+- Fuentes: Bebas Neue, Space Grotesk y JetBrains Mono (`@expo-google-fonts`)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Funciona en **Expo Go**; no requiere un development build.
 
-## Join the community
+## Empezar
 
-Join our community of developers creating universal apps.
+```bash
+npm install
+npm start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Escanea el QR con Expo Go. **El flash solo se prueba en un teléfono real**: el emulador no tiene linterna y Haptics tampoco vibra ahí.
+
+```bash
+npx tsc --noEmit   # revisar tipos
+```
+
+## Estructura
+
+```
+src/
+  app/
+    _layout.tsx          # global.css, fuentes y splash
+    index.tsx            # pantalla: elige la vista según el estado
+  views/                 # OffView, OnView, RevealView
+  components/
+    ui/                  # Header, LogoMark, PrimaryButton
+    torch/               # TorchCircle, TorchCamera
+    paywall/             # PaywallSheet, PlanOption
+  hooks/
+    useFlashlight.ts     # máquina de estados + AppState
+    useTorch.ts          # permiso de cámara y flash
+    usePaywall.ts        # plan, pago falso, timer y textos de Cancelar
+  constants/
+    content.ts           # planes, textos y tiempos
+    theme.ts             # colores para los íconos
+```
+
+## Generar el APK (Android)
+
+La app se compila en la nube con [EAS Build](https://docs.expo.dev/build/introduction/):
+
+```bash
+npm install -g eas-cli
+eas login
+eas build -p android --profile preview
+```
+
+El perfil `preview` genera un `.apk` instalable directo en el teléfono. Para Google Play usa `--profile production` (genera un `.aab`).
+
+## Paleta
+
+El color principal es `primary` (`#F1BD19`). Todos los colores viven en `tailwind.config.js`; no se usan colores sueltos en los componentes.
+
+## Licencia
+
+[MIT](LICENSE)
+
+---
+
+Hecho por [CODE ATD](https://github.com/codeatd) · más apps inútiles en **@codeatd**
