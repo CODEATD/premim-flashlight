@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
 import { useFlashlight } from "@/hooks/useFlashlight";
-import PrimaryButton from "@/components/ui/PrimaryButton";
+import PaywallSheet from "@/components/paywall/PaywallSheet";
 import OffView from "@/views/OffView";
 import OnView from "@/views/OnView";
 import RevealView from "@/views/RevealView";
@@ -20,16 +20,7 @@ const FlashlightScreen = () => {
         {isLight && <OnView onTurnOff={tryTurnOff} />}
         {state === "reveal" && <RevealView onRestart={restart} />}
 
-        {/* TEMPORAL: se reemplaza por <PaywallSheet /> en el paso 5 */}
-        {state === "paywall" && (
-          <View className="absolute bottom-28 left-6 right-6">
-            <PrimaryButton
-              label="Es broma (temporal)"
-              variant="outline"
-              onPress={revealJoke}
-            />
-          </View>
-        )}
+        {state === "paywall" && <PaywallSheet onJoke={revealJoke} />}
       </SafeAreaView>
 
       <StatusBar style={isLight ? "dark" : "light"} />
