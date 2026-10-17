@@ -8,9 +8,11 @@
     "scheme": "premiumflashlight",
     "userInterfaceStyle": "dark",
     "ios": {
+      "bundleIdentifier": "com.codeatd.linternapremium",
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "package": "com.codeatd.linternapremium",
       "adaptiveIcon": {
         "backgroundColor": "#070707",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -50,6 +52,12 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "backgroundColor": "#070707"
+    "backgroundColor": "#070707",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9effd0b5-4e3b-494c-8d7e-873a18bb0ab5"
+      }
+    }
   }
 }
